@@ -1,5 +1,5 @@
-function hello() {
-    console.log('Hello World');
-}
+import { UserRepository } from './repos/user-repos';
 
-hello();
+const userRepo = UserRepository.getInstance();
+
+console.log(userRepo.getAll());

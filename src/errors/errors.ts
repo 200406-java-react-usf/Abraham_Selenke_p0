@@ -19,3 +19,7 @@ class ResourceNotFoundError extends ApplicationError {
         super.setMessage('No resource was found.')
     }
 }
+
+export {
+    ResourceNotFoundError
+}
