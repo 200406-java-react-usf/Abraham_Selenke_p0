@@ -12,3 +12,10 @@ class ApplicationError {
         this.message = message;
     }
 }
+
+class ResourceNotFoundError extends ApplicationError {
+    constructor(reason?: string){
+        super(reason);
+        super.setMessage('No resource was found.')
+    }
+}
