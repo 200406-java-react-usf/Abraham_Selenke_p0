@@ -15,9 +15,16 @@ export class UserService {
             if(users.length == 0){
                 throw new ResourceNotFoundError();
             }
-            return users;
+            return users.map(this.removePassword);
         }catch(e) {
             throw e;
         }
+    }
+
+    private removePassword(user: User): User {
+        if(!user || !user.password) return user;
+        let usr = {...user};
+        delete usr.password;
+        return usr;
     }
 }
