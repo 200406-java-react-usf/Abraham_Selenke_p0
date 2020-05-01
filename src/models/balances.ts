@@ -1,5 +1,6 @@
 export class Balance{
 
+    balanceId: number;
     start: number;
     save: number;
     spent: number;
@@ -7,7 +8,9 @@ export class Balance{
     request: number;
     userId: number;
 
-    constructor(init: number, sv: number, sp: number, tot: number, request: number, uid: number){
+    constructor(bId: number, init: number, sv: number, sp: number, tot: number, request: number, uid: number){
+        //Balance ID
+        this.balanceId = bId;
         //Starting amount
         this.start = init;
         //How much money comes in and out

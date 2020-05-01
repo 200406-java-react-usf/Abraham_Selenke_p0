@@ -6,10 +6,10 @@ export class User{
     username: string;
     password: string;
     nickname: string;
-    email: string;
-    admin: boolean;
+    email: string;  
+    role: string;
     
-    constructor(id: number, fn: string, ln: string, un: string, pw: string, nn: string, em: string, admin: boolean){
+    constructor(id: number, fn: string, ln: string, un: string, pw: string, nn: string, em: string, role: string){
         //To track each member
         this.id = id;
         //Personal information
@@ -21,8 +21,8 @@ export class User{
         this.password = pw;
         //Display name
         this.nickname = nn;
-        //To check if they are an admin
-        this.admin = admin;
+        //To check if they are an admin or user
+        this.role = role;
     }
 
 }

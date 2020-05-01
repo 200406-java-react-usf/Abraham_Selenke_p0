@@ -28,7 +28,8 @@ export class UserRepository implements CrudRepository<User> {
                     return reject(new ResourceNotFoundError());
                 }
 
-                resolve(users)
+                resolve(users);
+
             }, 250);
         })
     }
