@@ -1,12 +1,6 @@
 import { User } from "../models/users";
 import { UserRepository } from "../repos/user-repos";
-import { 
-    isValidId, 
-    isValidObject, 
-    isValidString,
-    isEmptyObject,
-    isPropertyOf 
-} from "../util/validator"
+import { isEmptyObject, isPropertyOf, isValidId, isValidString} from "../util/validator"
 import { ResourceNotFoundError, BadRequestError, AuthenticationError } from "../errors/errors"
 
 export class UserService {

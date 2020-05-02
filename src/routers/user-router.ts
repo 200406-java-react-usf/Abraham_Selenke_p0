@@ -1,5 +1,5 @@
 import url from 'url';
-import express from 'express';
+import express, { response } from 'express';
 import AppConfig from '../config/app';
 import { isEmptyObject } from '../util/validator'
 import { ParsedUrlQuery } from 'querystring';
@@ -15,8 +15,32 @@ UserRouter.get('', adminGuard, async (req, resp) => {
         let reqURL = url.parse(req.url, true);
 
         if(!isEmptyObject<ParsedUrlQuery> (reqURL.query)) {
-            //missing more information in the user repo
-            //finishing repo before I start routers
+            let payload = await userService.getUserByUniqueKey({...reqURL.query});
+            resp.status(200).json(payload);
+        } else {
+            let payload = await userService.getAllUsers();
+            resp.status(200).json(payload)
         }
+    } catch (e) {
+        resp.status(e.statusCode).json(e)
     }
+});
+
+UserRouter.get('/:id', async (req, resp) => {
+    
+    const id = +req.params.id;
+
+    try{
+        let payload = await userService.getUserById(id);
+        return resp.status(200).json(payload);
+    } catch (e) {
+        return resp.status(e.statusCode).json(e);
+    }
+});
+
+UserRouter.post('', async (req, resp) => {
+
+    console.log('POST REQUEST RECEIVED AT /users');
+    console.log(req.body);
+
 })
