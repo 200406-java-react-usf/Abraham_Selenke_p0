@@ -47,6 +47,51 @@ export class UserRepository implements CrudRepository<User> {
            }
     }
 
-    //Need to add the rest of the functions. Will finsih tomorrow
+    async getById(id: number): Promise<User> {
+        
+        let client: PoolClient;
 
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.id = $1`;
+            let resultSet = await client.query(sql, [id]);
+            return mapUserResultSet(resultSet.rows[0]);
+           } catch (e) {
+               throw new InternalServerError();  
+           } finally {
+               client && client.release();
+           } 
+    }
+
+    async getUserByUniqueKey(key: string, val: string): Promise<User> {
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.${key} = $1`;
+            let resultSet = await client.query(sql, [val]);
+            return mapUserResultSet(resultSet.rows[0]);
+           } catch (e) {
+               throw new InternalServerError();  
+           } finally {
+               client && client.release();
+           } 
+    }
+
+    async getUserByCredentials(un: string, pw: string) {
+
+        let client: PoolClient;
+
+        try{
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.username = $1 and au.password = $2`;
+            let resultSet = await client.query(sql, [un, pw]);
+            return mapUserResultSet(resultSet.rows[0]);
+           } catch (e) {
+               throw new InternalServerError();  
+           } finally {
+               client && client.release();
+           } 
+    }
 }
