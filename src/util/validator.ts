@@ -20,8 +20,13 @@ const isValidObject = (object: Object, ...nullableProps: string[]) => {
     });
 }
 
+export function isEmptyObject<A>(obj: A) {
+    return obj && Object.keys(obj).length === 0;
+}
+
 export default {
     isValidId, 
     isValidObject, 
-    isValidString
+    isValidString,
+    isEmptyObject
 }
