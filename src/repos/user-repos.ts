@@ -22,6 +22,7 @@ export class UserRepository implements CrudRepository<User> {
             au.password,
             au.first_name,
             au.last_name,
+            au.nickname,
             au.email,
             ur.name as role_name
         from app_users au
@@ -44,6 +45,8 @@ export class UserRepository implements CrudRepository<User> {
            } finally {
                client && client.release();
            }
-        }
-}
+    }
 
+    //Need to add the rest of the functions. Will finsih tomorrow
+
+}
