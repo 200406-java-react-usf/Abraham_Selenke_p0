@@ -24,7 +24,7 @@ export function isEmptyObject<A>(obj: A) {
     return obj && Object.keys(obj).length === 0;
 }
 
-export function isPropertyOf = (prop: string, type: any) => {
+export const isPropertyOf = (prop: string, type: any) => {
 
     if(!prop || !type) {
         return false;

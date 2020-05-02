@@ -4,9 +4,10 @@ import {
     isValidId, 
     isValidObject, 
     isValidString,
-    isEmptyObject 
+    isEmptyObject,
+    isPropertyOf 
 } from "../util/validator"
-import { ResourceNotFoundError, BadRequestError } from "../errors/errors"
+import { ResourceNotFoundError, BadRequestError, AuthenticationError } from "../errors/errors"
 
 export class UserService {
     constructor(private userRepo: UserRepository) {
@@ -76,8 +77,27 @@ export class UserService {
         }
     }
 
+    async authenticateUser(un: string, pw: string): Promise<User> {
 
-    
+        try{
+            if (!isValidString(un, pw)) {
+                throw new BadRequestError();
+            }
+
+            let authUser: User;
+
+            authUser = await this.userRepo.getUserByCredentials(un, pw);
+
+            if (isEmptyObject(authUser)) {
+                throw new AuthenticationError('Bad credentials provided.');
+            }
+
+            return this.removePassword(authUser);
+        } catch (e) {
+            throw e;
+        }
+    }
+
     private removePassword(user: User): User {
         if(!user || !user.password) return user;
         let usr = {...user};
