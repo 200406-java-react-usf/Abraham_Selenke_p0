@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 import { sessionMiddleware } from './middleware/sessionMiddleware';
 import { corsFilter } from './middleware/cors-filter'
 
-import { UserRepository } from './repos/user-repos';
+import { UserRouter } from './routers/user-router';
 
 //Environment Configuration
 dotenv.config();
@@ -23,6 +23,11 @@ export const connectionPool: Pool = new Pool({
 //Web Server Configuration
 const app = express();
 
+app.use(sessionMiddleware);
+app.use(corsFilter);
+app.use('/', express.json());
+app.use('/users', UserRouter);
+app.use('/auth', AuthRouter);
 
 app.listen(8080, () => {
     console.log('Application running and listening at: http://localhost:8080');
