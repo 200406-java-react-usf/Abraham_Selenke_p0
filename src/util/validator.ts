@@ -24,9 +24,31 @@ export function isEmptyObject<A>(obj: A) {
     return obj && Object.keys(obj).length === 0;
 }
 
+export function isPropertyOf = (prop: string, type: any) => {
+
+    if(!prop || !type) {
+        return false;
+    }
+
+    let typeCreator = <A>(Type: (new () => A)): A => {
+        return new Type();
+    }
+
+    let tempInstance;
+
+    try{
+        tempInstance = typeCreator(type);
+    } catch {
+        return false;
+    }
+
+    return Object.keys(tempInstance).includes(prop);
+}
+
 export default {
     isValidId, 
     isValidObject, 
     isValidString,
-    isEmptyObject
+    isEmptyObject,
+    isPropertyOf
 }
