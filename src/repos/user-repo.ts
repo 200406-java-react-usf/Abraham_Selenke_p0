@@ -153,8 +153,10 @@ export class UserRepository implements CrudRepository<User> {
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
-            let rs = await client.query(sql, []);
+            let sql = `
+            delete from app_user
+            where id = $1`;
+            let rs = await client.query(sql, [id]);
             return true;
         } catch (e) {
             throw new InternalServerError();

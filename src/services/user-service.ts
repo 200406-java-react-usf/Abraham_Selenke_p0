@@ -1,7 +1,7 @@
 import { User } from "../models/users";
 import { UserRepository } from "../repos/user-repo";
 import { isEmptyObject, isPropertyOf, isValidId, isValidString, isValidObject} from "../util/validator"
-import { ResourceNotFoundError, BadRequestError, AuthenticationError, MethodImplementedError, ResourcePersistenceError } from "../errors/errors"
+import { ResourceNotFoundError, BadRequestError, AuthenticationError, MethodImplementedError, ResourcePersistenceError, BadGatewayError } from "../errors/errors"
 
 export class UserService {
     
@@ -98,7 +98,6 @@ export class UserService {
     }
 
     async addNewUser(newUser: User): Promise<User> {
-        console.log(newUser);
         
         try {
 
@@ -142,8 +141,27 @@ export class UserService {
             if (!isValidObject(updatedUser)) {
                 throw new BadRequestError('Invalid user provided (invalid values found).');
             }
-            console.log(updatedUser);
+
+            let usernameAvailable = await this.isUsernameAvailable(updatedUser.username);
+
+            if (!usernameAvailable) {
+                throw new ResourcePersistenceError('The provided username is already taken.');
+            }
+        
+            let emailAvailable = await this.isEmailAvailable(updatedUser.email);
+    
+            if (!emailAvailable) {
+                throw new  ResourcePersistenceError('The provided email is already taken.');
+            }
+
+            let nicknameAvailable = await this.isNicknameAvailable(updatedUser.nickname);
+    
+            if (!nicknameAvailable) {
+                throw new  ResourcePersistenceError('The provided nickname is already taken.');
+            }
+            
             return await this.userRepo.update(updatedUser);
+
         } catch (e) {
             throw e;
         }
@@ -153,7 +171,27 @@ export class UserService {
     async deleteById(id: number): Promise<boolean> {
         
         try {
-            throw new MethodImplementedError();
+            
+            let keys = Object.keys(id);
+            
+            if(!keys.every(key => isPropertyOf(key, User))) {
+                throw new BadRequestError();
+            }
+            
+            let key = keys[0];
+		    let userId = +id[key];
+        
+
+            if(!keys.every(key => isPropertyOf(key, User))) {
+                throw new BadRequestError();
+            }
+            
+		    if (!isValidId(userId)) {
+                throw new BadRequestError();
+            }
+
+            return await this.userRepo.deleteById(userId);
+            
         } catch (e) {
             throw e;
         }
