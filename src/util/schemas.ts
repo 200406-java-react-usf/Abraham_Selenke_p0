@@ -5,7 +5,7 @@ export interface UserSchema {
     first_name: string,
     last_name: string,
     nickname: string,
-    eamil: string,
+    email: string,
     role_name: string
 }
 
