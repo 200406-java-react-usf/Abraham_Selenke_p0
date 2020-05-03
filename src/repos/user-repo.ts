@@ -30,7 +30,6 @@ export class UserRepository implements CrudRepository<User> {
         on au.role_id = ur.id
     `;
 
-    
     async getAll(): Promise<User[]> {
         
         let client: PoolClient;
@@ -165,5 +164,4 @@ export class UserRepository implements CrudRepository<User> {
         }
 
     }
-
 }
