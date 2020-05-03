@@ -6,6 +6,7 @@ import { sessionMiddleware } from './middleware/sessionMiddleware';
 import { corsFilter } from './middleware/cors-filter'
 
 import { UserRouter } from './routers/user-router';
+import { AuthRouter } from './routers/auth-router';
 
 //Environment Configuration
 dotenv.config();
