@@ -85,4 +85,47 @@ export class AccountRepository implements CrudRepository<Account> {
             client && client.release();
         }
     }
+
+    async update(updatedAccount: Account): Promise<boolean> {
+        
+        let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+
+            let accountType = (await client.query('select id from account_type where name = $1',
+                                [updatedAccount.accountType])).rows[0].id;
+            
+            let sql = `
+            update bank_account
+            set balance = $2, acc_type = $3 
+            where id = $1`;
+            let rs = await client.query(sql, [updatedAccount.accountId, updatedAccount.balance, accountType]);            
+            return true;
+        } catch (e) {
+            
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
+    }
+
+    async deleteById(id: number): Promise<boolean> {
+
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = `
+            delete from bank_account
+            where id = $1`;
+            let rs = await client.query(sql, [id]);
+            return true;
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+
+    }
 }

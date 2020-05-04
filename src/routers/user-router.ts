@@ -40,9 +40,7 @@ UserRouter.get('/:id', async (req, resp) => {
 });
 
 UserRouter.post('', async (req, resp) => {
-    
-    //console.log('POST REQUEST RECEIVED AT /users');
-    //console.log(req.body);
+
     try {
         let newUser = await userService.addNewUser(req.body);
         return resp.status(201).json(newUser);
@@ -52,9 +50,7 @@ UserRouter.post('', async (req, resp) => {
 });
 
 UserRouter.put('', async (req, resp) => {
-    
-    //console.log('UPDATE REQUEST RECEIVED AT /users');
-    //console.log(req.body);
+
     try {
         let updateUser = await userService.updateUser(req.body);
         return resp.status(201).json(updateUser);
@@ -64,9 +60,6 @@ UserRouter.put('', async (req, resp) => {
 });
 
 UserRouter.delete('', async (req, resp) => {
-    
-    console.log('DELETE REQUEST RECEIVED AT /users');
-    console.log(req.body); //--> req.body must be an id
 
     try {
         let deleteUser = await userService.deleteById(req.body);

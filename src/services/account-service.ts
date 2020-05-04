@@ -53,6 +53,53 @@ export class AccountService {
         }
     }
 
+    async updateAccount(updateAccount: Account): Promise<boolean> {
+
+        try {
+            if(!isValidMoney(updateAccount.balance)) {
+                throw new BadRequestError('Invalid property value found in balance.')
+            }
+            
+            if(!isValidString(updateAccount.accountType)) {
+                throw new BadRequestError('Invalid property value in account type.')
+            }
+
+            return await this.accountRepo.update(updateAccount);
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async deleteById(id: number): Promise<boolean> {
+        
+        try {
+            
+            let keys = Object.keys(id);
+            
+            if(!keys.every(key => isPropertyOf(key, Account))) {
+                throw new BadRequestError("id is the error");
+            }
+            
+            let key = keys[0];
+		    let accountId = +id[key];
+        
+
+            if(!keys.every(key => isPropertyOf(key, Account))) {
+                throw new BadRequestError();
+            }
+            
+		    if (!isValidId(accountId)) {
+                throw new BadRequestError();
+            }
+
+            return await this.accountRepo.deleteById(accountId);
+            
+        } catch (e) {
+            throw e;
+        }
+
+    }
+
     private removeId(account: Account): Account {
         if(!account || !account.time) return account;
         let acc = {...account};

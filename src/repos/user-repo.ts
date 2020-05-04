@@ -139,7 +139,6 @@ export class UserRepository implements CrudRepository<User> {
         } finally {
             client && client.release();
         }
-    
     }
 
     async deleteById(id: number): Promise<boolean> {
