@@ -37,11 +37,7 @@ export class UserRepository implements CrudRepository<User> {
         try{
             client = await connectionPool.connect();
             let sql = `${this.baseQuery}`;
-            console.log('Error');
-            
             let rs = await client.query(sql);
-            console.log(rs);
-            
             return rs.rows.map(mapUserResultSet);
         } catch (e) {
                throw new InternalServerError();  
