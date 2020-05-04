@@ -6,6 +6,10 @@ export const isValidMoney = (id: number): boolean => {
     return (id && typeof id === 'number' && id > 0);
 }
 
+export const isValidBoolean = (string: boolean): boolean => {
+    return (string && typeof string === 'boolean');
+}
+
 export const isValidString = (...strings: string[]): boolean => {
     for (let string of strings) {
         if (!string || typeof string !== 'string') {
@@ -50,6 +54,7 @@ export const isPropertyOf = (prop: string, type: any) => {
 }
 
 export default {
+    isValidBoolean,
     isValidMoney,
     isValidId, 
     isValidObject, 

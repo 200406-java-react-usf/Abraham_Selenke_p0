@@ -113,7 +113,7 @@ export class UserRepository implements CrudRepository<User> {
 
         } catch (e) {
             console.log(e);
-            throw new InternalServerError('Invalid User requirements');
+            throw new InternalServerError();
         } finally {
             client && client.release();
         }

@@ -8,6 +8,7 @@ import { corsFilter } from './middleware/cors-filter'
 import { UserRouter } from './routers/user-router';
 import { AuthRouter } from './routers/auth-router';
 import { AccountRouter } from './routers/account-router';
+import { TranscationRouter } from './routers/transcation-router';
 
 //Environment Configuration
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/', express.json());
 app.use('/users', UserRouter);
 app.use('/auth', AuthRouter);
 app.use('/account', AccountRouter);
+app.use('/trans', TranscationRouter)
 
 app.listen(8080, () => {
     console.log('Application running and listening at: http://localhost:8080');
