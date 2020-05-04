@@ -1,12 +1,7 @@
 import { User } from '../models/users';
 import {CrudRepository } from './crud-repo';
 
-import { 
-    ResourceNotFoundError, 
-    ResourcePersistenceError, 
-    InternalServerError,
-    MethodImplementedError
-} from '../errors/errors';
+import { InternalServerError } from '../errors/errors';
 
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';

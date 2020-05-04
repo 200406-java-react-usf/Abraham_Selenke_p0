@@ -1,19 +1,12 @@
 import { Account } from '../models/account';
 import {CrudRepository } from './crud-repo';
 
-import { 
-    ResourceNotFoundError, 
-    ResourcePersistenceError, 
-    InternalServerError,
-    MethodImplementedError
-} from '../errors/errors';
+import { InternalServerError } from '../errors/errors';
 
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapAccountResultSet } from '../util/result-set-mapper';
-import { UserRepository } from './user-repo';
-import { UserService } from '../services/user-service';
-import { User } from '../models/users';
+
 
 export class AccountRepository implements CrudRepository<Account> {
 

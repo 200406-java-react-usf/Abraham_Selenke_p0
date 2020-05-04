@@ -1,12 +1,7 @@
 import { Transcation } from '../models/transcation';
 import {CrudRepository } from './crud-repo';
 
-import { 
-    ResourceNotFoundError, 
-    ResourcePersistenceError, 
-    InternalServerError,
-    MethodImplementedError
-} from '../errors/errors';
+import {  InternalServerError } from '../errors/errors';
 
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
@@ -19,7 +14,7 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
 	        t.id,
 	        t.deposit,
 	        t.withdrawal,
-	        t.amount,
+            t.amount,
 	        b.balance as balance
         from transcations t
         join bank_account b
@@ -66,16 +61,14 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
 
             client = await connectionPool.connect();
             let sql = `
-            insert into transcation (deposit, withdrawal, amount)
-            values ($1, $2, $3) 
-            returning id;
-            `;
-            let rs = await client.query(sql, [newTranscation.deposit, newTranscation.withdrawal, newTranscation.amount]);
+            insert into transcations (deposit, withdrawal, amount, account_trans_id)
+            values ($2, $3, $4, $1) 
+            returning id`;
+            let rs = await client.query(sql, [newTranscation.accountId, newTranscation.deposit, newTranscation.withdrawal, newTranscation.amount]);
             newTranscation.transcationId = rs.rows[0].id;
             return newTranscation;
 
         } catch (e) {
-            console.log(e);
             throw new InternalServerError();
         } finally {
             client && client.release();
@@ -90,7 +83,7 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
             client = await connectionPool.connect();
 
             let sql = `
-            update transcation
+            update transcations
             set deposit = $2, withdrawal = $3, amount = $4
             where id = $1`;
             let rs = await client.query(sql, [updatedTranscation.transcationId, updatedTranscation.deposit, updatedTranscation.withdrawal, updatedTranscation.amount]);
@@ -109,7 +102,7 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
         try {
             client = await connectionPool.connect();
             let sql = `
-            delete from transcation
+            delete from transcations
             where id = $1`;
             let rs = await client.query(sql, [id]);
             return true;

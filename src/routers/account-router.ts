@@ -1,9 +1,6 @@
-import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
-import { isEmptyObject } from '../util/validator'
-import { ParsedUrlQuery } from 'querystring';
-import { adminGuard } from '../middleware/auth-middleware';
+
 
 export const AccountRouter = express.Router();
 

@@ -1,7 +1,7 @@
 import { Transcation } from "../models/transcation";
 import { TranscationRepository } from "../repos/transcation-repo";
-import { ResourceNotFoundError, BadRequestError, AuthenticationError, ResourcePersistenceError } from "../errors/errors";
-import { isValidBoolean, isValidMoney, isValidString, isPropertyOf, isValidId, isValidObject, isEmptyObject } from "../util/validator";
+import { ResourceNotFoundError, BadRequestError } from "../errors/errors";
+import { isValidMoney, isPropertyOf, isValidId, isEmptyObject } from "../util/validator";
 
 export class TranscationService {
 
@@ -37,20 +37,10 @@ export class TranscationService {
 
     async addNewTranscation(newTranscation: Transcation): Promise<Transcation> {
         try{
-            if(!isValidBoolean(newTranscation.deposit)) {
-                throw new BadRequestError('Invalid property value found in deposit of transcation.')
-            }
-            
-            if(!isValidBoolean(newTranscation.withdrawal)) {
-                throw new BadRequestError('Invalid property value found in withdrawal of transcation type.')
-            }
+
 
             if(!isValidMoney(newTranscation.amount)) {
                 throw new BadRequestError('Invalid property value found in amount.')
-            }
-
-            if(!isValidId(newTranscation.accountId)) {
-                throw new BadRequestError();
             }
 
             const transcationCreated = await this.transcationRepo.save(newTranscation);
@@ -64,19 +54,11 @@ export class TranscationService {
     async updateTranscation(updateTranscation: Transcation): Promise<boolean> {
 
         try {
-            if(!isValidBoolean(updateTranscation.deposit)) {
-                throw new BadRequestError('Invalid property value found in deposit of transcation.')
-            }
-            
-            if(!isValidBoolean(updateTranscation.withdrawal)) {
-                throw new BadRequestError('Invalid property value found in withdrawal of transcation type.')
-            }
-
             if(!isValidMoney(updateTranscation.amount)) {
                 throw new BadRequestError('Invalid property value found in amount.')
             }
 
-            if(!isValidId(updateTranscation.accountId)) {
+            if(!isValidId(updateTranscation.transcationId)) {
                 throw new BadRequestError();
             }
 

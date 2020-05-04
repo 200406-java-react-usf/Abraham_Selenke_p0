@@ -17,7 +17,7 @@ export class AccountService {
             throw new ResourceNotFoundError();
         }
 
-        return accounts.map(this.removeId);
+        return accounts.map(this.removeTime);
     }
 
     async getAccountById(id: number): Promise<Account> {
@@ -32,7 +32,7 @@ export class AccountService {
             throw new ResourceNotFoundError();
         }
 
-        return this.removeId(account);
+        return this.removeTime(account);
     }
 
     async addNewAccount(newAccount: Account): Promise<Account> {
@@ -47,7 +47,7 @@ export class AccountService {
 
             const accountCreated = await this.accountRepo.save(newAccount);
 
-            return this.removeId(accountCreated);
+            return this.removeTime(accountCreated);
         } catch (e) {
             throw e
         }
@@ -100,7 +100,7 @@ export class AccountService {
 
     }
 
-    private removeId(account: Account): Account {
+    private removeTime(account: Account): Account {
         if(!account || !account.time) return account;
         let acc = {...account};
         delete acc.time;
