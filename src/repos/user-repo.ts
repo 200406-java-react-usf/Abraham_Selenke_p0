@@ -42,7 +42,7 @@ export class UserRepository implements CrudRepository<User> {
             let rs = await client.query(sql);
             console.log(rs);
             
-            return rs.rows;
+            return rs.rows.map(mapUserResultSet);
         } catch (e) {
                throw new InternalServerError();  
         } finally {

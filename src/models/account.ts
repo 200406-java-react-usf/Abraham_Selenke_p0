@@ -3,9 +3,9 @@ export class Account{
     accountId: number;
 	balance: number;
 	time: Date;
-	accountType: number;
+	accountType: string;
 
-    constructor(aId: number, bal: number, time: Date, atype: number){
+    constructor(aId: number, bal: number, time: Date, atype: string){
         
         this.accountId = aId;
         this.balance = bal;
