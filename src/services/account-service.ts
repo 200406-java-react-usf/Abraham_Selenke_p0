@@ -1,7 +1,7 @@
 import { Account } from "../models/account";
 import { AccountRepository } from "../repos/account-repo";
 import { ResourceNotFoundError, BadRequestError, AuthenticationError, ResourcePersistenceError } from "../errors/errors";
-import { isValidString, isPropertyOf, isValidId, isValidObject, isEmptyObject } from "../util/validator";
+import { isValidMoney, isValidString, isPropertyOf, isValidId, isValidObject, isEmptyObject } from "../util/validator";
 
 export class AccountService {
 
@@ -35,9 +35,23 @@ export class AccountService {
         return this.removeId(account);
     }
 
-    
+    async addNewAccount(newAccount: Account): Promise<Account> {
+        try{
+            if(!isValidMoney(newAccount.balance)) {
+                throw new BadRequestError('Invalid property value found in balance.')
+            }
+            
+            if(!isValidString(newAccount.accountType)) {
+                throw new BadRequestError('Invalid property value in account type.')
+            }
 
+            const accountCreated = await this.accountRepo.save(newAccount);
 
+            return this.removeId(accountCreated);
+        } catch (e) {
+            throw e
+        }
+    }
 
     private removeId(account: Account): Account {
         if(!account || !account.time) return account;

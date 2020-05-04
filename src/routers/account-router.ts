@@ -19,4 +19,14 @@ AccountRouter.get('/:id', async (req, resp) => {
     } catch (e) {
         return resp.status(e.statusCode).json(e);
     }
-})
+});
+
+AccountRouter.post('', async (req, resp) => {
+    
+    try {
+        let newAccount = await accountService.addNewAccount(req.body);
+        return resp.status(201).json(newAccount);
+    } catch (e) {
+        return resp.status(e.statusCode).json(e);
+    }
+});

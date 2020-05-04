@@ -56,4 +56,33 @@ export class AccountRepository implements CrudRepository<Account> {
                client && client.release();
         } 
     }
+
+    async save(newAccount: Account): Promise<Account> {
+
+        let client: PoolClient;
+
+        try {
+
+            client = await connectionPool.connect();
+
+            let accountType = (await client.query('select id from account_type where name = $1',
+                                [newAccount.accountType])).rows[0].id;
+
+            let sql = `
+            insert into bank_account (balance, acc_type)
+            values ($1, $2)
+            returning id;
+            `;
+
+            let rs = await client.query(sql, [newAccount.balance, accountType]);
+            newAccount.accountId = rs.rows[0].id;
+            return newAccount;
+
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerError('Invalid Account requirements');
+        } finally {
+            client && client.release();
+        }
+    }
 }
