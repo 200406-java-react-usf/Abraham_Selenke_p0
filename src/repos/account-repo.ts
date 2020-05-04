@@ -11,6 +11,9 @@ import {
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapAccountResultSet } from '../util/result-set-mapper';
+import { UserRepository } from './user-repo';
+import { UserService } from '../services/user-service';
+import { User } from '../models/users';
 
 export class AccountRepository implements CrudRepository<Account> {
 
@@ -61,9 +64,10 @@ export class AccountRepository implements CrudRepository<Account> {
 
         let client: PoolClient;
 
-        try {
-
+        try {            
             client = await connectionPool.connect();
+
+            const userId = newAccount.accountId;
 
             let accountType = (await client.query('select id from account_type where name = $1',
                                 [newAccount.accountType])).rows[0].id;
@@ -76,6 +80,8 @@ export class AccountRepository implements CrudRepository<Account> {
 
             let rs = await client.query(sql, [newAccount.balance, accountType]);
             newAccount.accountId = rs.rows[0].id;
+            let connectAccount = (await client.query('insert into user_accounts (user_id, bank_id) values ($1, $2);',
+                [userId, newAccount.accountId]));
             return newAccount;
 
         } catch (e) {
