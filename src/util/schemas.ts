@@ -9,3 +9,17 @@ export interface UserSchema {
     role_name: string
 }
 
+export interface AccountSchema {
+    id: number,
+    balance: number,
+    created_time: Date,
+    account_type: string
+}
+
+export interface TranscationSchema {
+    id: number,
+    deposit: boolean,
+	withdrawal: boolean,
+    amount: number,
+    balance: number
+}
