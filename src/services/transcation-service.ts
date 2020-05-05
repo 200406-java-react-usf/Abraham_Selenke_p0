@@ -27,7 +27,7 @@ export class TranscationService {
         }
 
         let transcation = await this.transcationRepo.getById(id);
-
+        //Need to test line 32
         if(isEmptyObject(transcation)) {
             throw new ResourceNotFoundError();
         }
@@ -52,12 +52,12 @@ export class TranscationService {
     }
 
     async updateTranscation(updateTranscation: Transcation): Promise<boolean> {
-
+        //Need to test line 58
         try {
             if(!isValidMoney(updateTranscation.amount)) {
                 throw new BadRequestError('Invalid property value found in amount.')
             }
-
+            //Need to test line 62
             if(!isValidId(updateTranscation.transcationId)) {
                 throw new BadRequestError();
             }
@@ -71,7 +71,7 @@ export class TranscationService {
     async deleteById(id: number): Promise<boolean> {
         
         try {
-            
+            //Need to test lines 75-98
             let keys = Object.keys(id);
             
             if(!keys.every(key => isPropertyOf(key, Transcation))) {

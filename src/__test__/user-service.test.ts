@@ -1,7 +1,6 @@
 import { UserService } from '../services/user-service';
 import { User } from '../models/users';
 
-import Validator from '../util/validator';
 import { ResourceNotFoundError, BadRequestError, ResourcePersistenceError } from '../errors/errors';
 import validator from '../util/validator';
 
@@ -17,7 +16,7 @@ jest.mock('../repos/user-repo', () => {
         deleteById = jest.fn();
         isUsernameAvailable = jest.fn();
         isEmailAvailable = jest.fn();
-        isNicknameAvailable = jest.fn();
+        isNicknameAvailable = jest.fn();        
 	};
 });
 

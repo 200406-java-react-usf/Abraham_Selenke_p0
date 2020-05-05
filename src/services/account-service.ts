@@ -28,6 +28,7 @@ export class AccountService {
 
         let account = await this.accountRepo.getById(id);
 
+        //Need to test line 33
         if(isEmptyObject(account)) {
             throw new ResourceNotFoundError();
         }
@@ -56,10 +57,11 @@ export class AccountService {
     async updateAccount(updateAccount: Account): Promise<boolean> {
 
         try {
+            //Need to test line 61
             if(!isValidMoney(updateAccount.balance)) {
                 throw new BadRequestError('Invalid property value found in balance.')
             }
-            
+            //Need to test line 65
             if(!isValidString(updateAccount.accountType)) {
                 throw new BadRequestError('Invalid property value in account type.')
             }
@@ -72,8 +74,8 @@ export class AccountService {
 
     async deleteById(id: number): Promise<boolean> {
         
-        try {
-            
+        //Need to test lines 77-98
+        try { 
             let keys = Object.keys(id);
             
             if(!keys.every(key => isPropertyOf(key, Account))) {

@@ -94,12 +94,14 @@ export class AccountRepository implements CrudRepository<Account> {
             let accountType = (await client.query('select id from account_type where name = $1',
                                 [updatedAccount.accountType])).rows[0].id;
             
+            //Need to test lines 97-102
             let sql = `
             update bank_account
             set balance = $2, acc_type = $3 
             where id = $1`;
             let rs = await client.query(sql, [updatedAccount.accountId, updatedAccount.balance, accountType]);            
             return true;
+
         } catch (e) {
             
             throw new InternalServerError();

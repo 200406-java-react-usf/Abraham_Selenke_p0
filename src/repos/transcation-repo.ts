@@ -89,6 +89,7 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
             let rs = await client.query(sql, [updatedTranscation.transcationId, updatedTranscation.deposit, updatedTranscation.withdrawal, updatedTranscation.amount]);
             return true;
         } catch (e) {
+            //Need to test line 92
             throw new InternalServerError();
         } finally {
             client && client.release();

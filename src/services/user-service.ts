@@ -27,7 +27,7 @@ export class UserService {
         }
 
         let user = await this.userRepo.getById(id);
-
+        //Need to test line 32
         if(isEmptyObject(user)) {
             throw new ResourceNotFoundError();
         }
@@ -40,7 +40,7 @@ export class UserService {
         try {
 
             let queryKeys = Object.keys(queryObj);
-
+            //Need to test line 45
             if(!queryKeys.every(key => isPropertyOf(key, User))) {
                 throw new BadRequestError();
             }
@@ -48,8 +48,8 @@ export class UserService {
             //support single param searches...can we do better?
             let key = queryKeys[0];
             let val = queryKeys[key];
-
             //reuse the logic
+            //Need to test line 54
             if (key === 'id') {
                 return await this.getUserById(+val);
             }
@@ -58,7 +58,7 @@ export class UserService {
             if(!isValidString(val)){
                 throw new BadRequestError();
             }
-
+            //Need to test lines 62-68
             let user = await this.userRepo.getUserByUniqueKey(key, val);
 
             if (isEmptyObject(user)) {
@@ -75,7 +75,7 @@ export class UserService {
     async authenticateUser(un: string, pw: string): Promise<User> {
 
         try {
-
+            //Need to test lines 79-95
             if (!isValidString(un, pw)) {
                 throw new BadRequestError();
             }
@@ -106,19 +106,20 @@ export class UserService {
             }
 
             let usernameAvailable = await this.isUsernameAvailable(newUser.username);
-
+            //Need to test line 111
             if (!usernameAvailable) {
                 throw new ResourcePersistenceError('The provided username is already taken.');
             }
         
             let emailAvailable = await this.isEmailAvailable(newUser.email);
-    
+            //Need to test line 117
             if (!emailAvailable) {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
             let nicknameAvailable = await this.isNicknameAvailable(newUser.nickname);
-    
+            
+            //Need to test lines 123
             if (!nicknameAvailable) {
                 throw new  ResourcePersistenceError('The provided nickname is already taken.');
             }
@@ -137,25 +138,25 @@ export class UserService {
     async updateUser(updatedUser: User): Promise<boolean> {
         
         try {
-
+            //Need to test line 142
             if (!isValidObject(updatedUser)) {
                 throw new BadRequestError('Invalid user provided (invalid values found).');
             }
 
             let usernameAvailable = await this.isUsernameAvailable(updatedUser.username);
-
+            //Need to test line 148
             if (!usernameAvailable) {
                 throw new ResourcePersistenceError('The provided username is already taken.');
             }
         
             let emailAvailable = await this.isEmailAvailable(updatedUser.email);
-    
+            //Need to test line 154
             if (!emailAvailable) {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
             let nicknameAvailable = await this.isNicknameAvailable(updatedUser.nickname);
-    
+            //Need to test line 160
             if (!nicknameAvailable) {
                 throw new  ResourcePersistenceError('The provided nickname is already taken.');
             }
@@ -171,7 +172,7 @@ export class UserService {
     async deleteById(id: number): Promise<boolean> {
         
         try {
-            
+            //Need to test lines 175-196
             let keys = Object.keys(id);
             
             if(!keys.every(key => isPropertyOf(key, User))) {
@@ -206,7 +207,7 @@ export class UserService {
             //console.log('username is available')
             return true;
         }
-
+        //Need to test line 211
         //console.log('username is unavailable')
         return false;
 
@@ -220,7 +221,7 @@ export class UserService {
             //console.log('email is available')
             return true;
         }
-
+        //Need to test line 225
         //console.log('email is unavailable')
         return false;
     }
@@ -233,7 +234,7 @@ export class UserService {
             //console.log('nickname is available')
             return true;
         }
-
+        //Need to test line 238
         //console.log('nickname is unavailable')
         return false;
     }

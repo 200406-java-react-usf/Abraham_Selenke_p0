@@ -60,7 +60,7 @@ export class UserRepository implements CrudRepository<User> {
     async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
         let client: PoolClient;
-
+        //Need to test lines 65-72
         try{
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} where au.${key} = $1`;
@@ -76,7 +76,7 @@ export class UserRepository implements CrudRepository<User> {
     async getUserByCredentials(un: string, pw: string) {
         
         let client: PoolClient;
-
+        //Need to test lines 81-88
         try {
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} where au.username = $1 and au.password = $2`;
@@ -120,7 +120,7 @@ export class UserRepository implements CrudRepository<User> {
         let client: PoolClient;
         try {
             client = await connectionPool.connect();
-
+            //Need to test lines 125 to 131
             let userId = (await client.query('select id from app_user where id = $1', [updatedUser.id])).rows[0].id;
             let sql = `
             update app_user
