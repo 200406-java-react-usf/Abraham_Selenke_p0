@@ -1,3 +1,5 @@
+import { isBoolean } from "util";
+
 export const isValidId = (id: number): boolean => {
     return (id && typeof id === 'number' && Number.isInteger(id) && id > 0);
 }
@@ -7,7 +9,10 @@ export const isValidMoney = (id: number): boolean => {
 }
 
 export const isValidBoolean = (string: boolean): boolean => {
-    return (string && typeof string === 'boolean');
+    if (!string) {
+        return false;
+    }
+    return true;
 }
 
 export const isValidString = (...strings: string[]): boolean => {
