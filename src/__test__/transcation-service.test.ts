@@ -36,7 +36,7 @@ describe('transcationService', () => {
 		        update: jest.fn(),
                 deleteById: jest.fn(),
 			};
-		});
+        });
 
 		sut = new TranscationService(mockRepo);
 
@@ -129,11 +129,26 @@ describe('transcationService', () => {
 		} catch (e) {
 			expect(e instanceof BadRequestError).toBe(true);
 		}
-	});
+    });
+    
+    test('should throw a ResourceNotFoundError when getTranscationById fails to get any Transcation', async () => {
+
+		expect.hasAssertions();
+		mockRepo.getById = jest.fn().mockReturnValue([]);
+
+		try{
+			await sut.getTranscationById(1);
+		} catch (e) {
+
+			expect(e instanceof ResourceNotFoundError).toBeTruthy();
+		}
+    });
 
     test('should return a newTranscation when save is given a valid Transcation object', async () => {
 
         expect.hasAssertions();
+        validator.isValidMoney = jest.fn().mockReturnValue(true);
+        validator.isValidId = jest.fn().mockReturnValue(true);
         
 		mockRepo.save = jest.fn().mockImplementation((newTranscation: Transcation) => {
 			return new Promise<Transcation>((resolve) => {
@@ -151,13 +166,39 @@ describe('transcationService', () => {
 	test('should throw BadRequestError when save is envoked and id is not unique', async () => {
 
 		expect.hasAssertions();
-		validator.isValidMoney = jest.fn().mockReturnValue(true);
+		validator.isValidMoney = jest.fn().mockReturnValue(false);
 		validator.isValidString = jest.fn().mockReturnValue(true);
 
 		try {
-			await sut.addNewTranscation(new Transcation(500, true, false, 1, 2));
+			await sut.addNewTranscation(new Transcation(500, true, false, -3, 2));
 		} catch (e) {		
-			expect(e instanceof BadRequestError).toBe(false);
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+    });
+    
+    test('should throw BadRequestError when save is envoked and id is not unique', async () => {
+
+		expect.hasAssertions();
+		validator.isValidMoney = jest.fn().mockReturnValue(false);
+		validator.isValidString = jest.fn().mockReturnValue(true);
+
+		try {
+			await sut.addNewTranscation(new Transcation(500, true, false, NaN, 2));
+		} catch (e) {		
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+    });
+    
+    test('should throw BadRequestError when save is envoked and id is not unique', async () => {
+
+		expect.hasAssertions();
+		validator.isValidMoney = jest.fn().mockReturnValue(false);
+		validator.isValidString = jest.fn().mockReturnValue(true);
+
+		try {
+			await sut.addNewTranscation(new Transcation(500, true, false, 0, 2));
+		} catch (e) {		
+			expect(e instanceof BadRequestError).toBe(true);
 		}
 	});
 
@@ -196,17 +237,24 @@ describe('transcationService', () => {
 		}
 	});
 
-	// test('should return true when deleteById succesfully deletes an Transcation', async () => {
+	test('should return true when deleteById succesfully deletes an Transcation', async () => {
 
-	// 	expect.hasAssertions();
-	// 	validator.isValidId = jest.fn().mockReturnValue(true);
-	// 	validator.isPropertyOf = jest.fn().mockReturnValue(true);
-	// 	mockRepo.deleteById = jest.fn().mockReturnValue(true);
+        validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        validator.isValidId = jest.fn().mockReturnValue(false);
 
-	// 	let result = await sut.deleteById(1);
-		
-	// 	expect(result).toBe(true);
-	// });
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockTranscation = mockTranscation.slice(0,id).concat(mockTranscation.slice(id+1,mockTranscation.length));
+                resolve(true);
+            }); 
+        });
+        
+        try{
+			await sut.deleteById(1);
+		} catch (e) {
+			expect(e instanceof BadRequestError).toBe(true);
+        }
+    });
 
 	test('should return true when updateTranscation is envoked and given a valid transcation object', async () => {
 
