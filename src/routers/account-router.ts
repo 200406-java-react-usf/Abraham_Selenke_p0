@@ -1,7 +1,6 @@
 import express from 'express';
 import AppConfig from '../config/app';
 
-
 export const AccountRouter = express.Router();
 
 const accountService = AppConfig.accountService;
