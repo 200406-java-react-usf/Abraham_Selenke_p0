@@ -7,7 +7,9 @@ import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapAccountResultSet } from '../util/result-set-mapper';
 
-
+/**
+ * The account: getAll, getById, save, update, delete 
+ */
 export class AccountRepository implements CrudRepository<Account> {
 
     baseQuery = `
@@ -21,6 +23,9 @@ export class AccountRepository implements CrudRepository<Account> {
     on a.id = b.acc_type
     `;
 
+    /**
+     * returns all accounts
+     */
     async getAll(): Promise<Account[]> {
         
         let client: PoolClient;
@@ -37,6 +42,10 @@ export class AccountRepository implements CrudRepository<Account> {
         }
     }
 
+    /**
+     * 
+     * @param id The user id is needed 
+     */
     async getById(id: number): Promise<Account> {
         
         let client: PoolClient;
@@ -52,7 +61,11 @@ export class AccountRepository implements CrudRepository<Account> {
                client && client.release();
         } 
     }
-
+    
+    /**
+     * Creates a new account that needs balance and account type
+     * @param newAccount 
+     */
     async save(newAccount: Account): Promise<Account> {
 
         let client: PoolClient;
@@ -85,6 +98,10 @@ export class AccountRepository implements CrudRepository<Account> {
         }
     }
 
+    /**
+     * Needs account id, balance and type to update account
+     * @param updatedAccount 
+     */
     async update(updatedAccount: Account): Promise<boolean> {
         
         let client: PoolClient;
@@ -111,6 +128,10 @@ export class AccountRepository implements CrudRepository<Account> {
     
     }
 
+    /**
+     *Needs the id of the account to detele the whole account 
+     * @param id 
+     */
     async deleteById(id: number): Promise<boolean> {
 
         let client: PoolClient;
