@@ -3,6 +3,10 @@ import { User } from "../models/users";
 import { Account } from '../models/account';
 import { Transcation } from '../models/transcation';
 
+/**
+ * 
+ * @param resultSet Returns the result set from the database for Users
+ */
 export function mapUserResultSet(resultSet: UserSchema): User {
     
     //Returns an empty object so that an error can catch it later
@@ -22,6 +26,10 @@ export function mapUserResultSet(resultSet: UserSchema): User {
     );
 }
 
+/**
+ * 
+ * @param resultSet Returns the result set from the database for accounts
+ */
 export function mapAccountResultSet(resultSet: AccountSchema): Account {
     
     if (!resultSet) {
@@ -36,6 +44,10 @@ export function mapAccountResultSet(resultSet: AccountSchema): Account {
     );
 }
 
+/**
+ * 
+ * @param resultSet Returns the result set from the database for transactions
+ */
 export function mapTranscationResultSet(resultSet: TranscationSchema): Transcation {
     
     if (!resultSet) {
