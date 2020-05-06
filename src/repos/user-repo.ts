@@ -7,7 +7,10 @@ import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapUserResultSet } from '../util/result-set-mapper';
 
-
+/**
+ * The User: getAll, getById, getUserByUniqueKey, 
+ * getUserByCredentials, save, update, delete 
+ */
 export class UserRepository implements CrudRepository<User> {
     
     baseQuery = `
@@ -25,6 +28,9 @@ export class UserRepository implements CrudRepository<User> {
         on au.role_id = ur.id
     `;
 
+    /**
+     * returns all users
+     */
     async getAll(): Promise<User[]> {
         
         let client: PoolClient;
@@ -41,6 +47,10 @@ export class UserRepository implements CrudRepository<User> {
         }
     }
 
+    /**
+     * returns user by provided id
+     * @param id 
+     */
     async getById(id: number): Promise<User> {
         
         let client: PoolClient;
@@ -57,6 +67,11 @@ export class UserRepository implements CrudRepository<User> {
         } 
     }
 
+    /**
+     * Checkes to see if the user is an admin
+     * @param key The value you are looking for
+     * @param val The string with that information
+     */
     async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
         let client: PoolClient;
@@ -73,6 +88,11 @@ export class UserRepository implements CrudRepository<User> {
            } 
     }
 
+    /**
+     * Collects information
+     * @param un username of user
+     * @param pw password of user
+     */
     async getUserByCredentials(un: string, pw: string) {
         
         let client: PoolClient;
@@ -90,6 +110,10 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
+    /**
+     * 
+     * @param newUser Collects all 6 requirments to make a new user
+     */
     async save(newUser: User): Promise<User> {
             
         let client: PoolClient;
@@ -115,6 +139,10 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
+    /**
+     * 
+     * @param updatedUser Allows you to update user
+     */
     async update(updatedUser: User): Promise<boolean> {
         
         let client: PoolClient;
@@ -136,6 +164,10 @@ export class UserRepository implements CrudRepository<User> {
         }
     }
 
+    /**
+     * 
+     * @param id User Id needed to delete user
+     */
     async deleteById(id: number): Promise<boolean> {
 
         let client: PoolClient;
