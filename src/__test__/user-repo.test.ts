@@ -214,20 +214,49 @@ describe('userRepo Testing', () => {
 		}
     });
     
-    // test('should return user when update works', async () => {
+    test('should return user when update works', async () => {
 
-	// 	expect.hasAssertions();
-	// 	let mockUser = new User(1, 'Test', 'password', 'Test', 'TestLast', 'TT', 'email', 'User');
-	// 	(mockConnect as jest.Mock).mockImplementation( () => {
-	// 		return {
-	// 			query: jest.fn().mockImplementation( () => { return false; }),
-	// 			release: jest.fn()
-	// 		};
-	// 	});
+		expect.hasAssertions();
+		let mockUser = new User(1, 'Test', 'password', 'Test', 'TestLast', 'TT', 'email', 'User');
+		(mockConnect as jest.Mock).mockImplementation( () => {
+			return {
+				query: jest.fn().mockImplementation( () => { return false; }),
+				release: jest.fn()
+			};
+		});
 
-	// 	let result = await sut.update(mockUser);
+		try {
+			await sut.update(mockUser);
+		} catch (e) {
+			expect(e instanceof InternalServerError).toBe(true);
+		}
+	});
 
-    //     expect(result).toBe(false);
-	// });
+	test('should return a user when getUserByCredentials is given a valid email', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'pw', 'fn', 'ln', 'nn', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getUserByCredentials(mockUser.username, mockUser.password);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+	});
+	
+	test('should return a user when getByUniqueKey is given valid key and value', async() => {
+
+        expect.hasAssertions();
+
+        let mockUser = new User(3, 'un', 'pw', 'fn', 'ln', 'nn', 'email', 'password');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+
+        let result = await sut.getUserByUniqueKey('username', mockUser.username);
+
+        expect(result).toBeTruthy();
+        expect(result instanceof User).toBe(true);
+
+    });
 
 });
