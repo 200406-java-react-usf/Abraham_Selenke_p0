@@ -3,12 +3,21 @@ import { UserRepository } from "../repos/user-repo";
 import { isEmptyObject, isPropertyOf, isValidId, isValidString, isValidObject} from "../util/validator"
 import { ResourceNotFoundError, BadRequestError, AuthenticationError, MethodImplementedError, ResourcePersistenceError, BadGatewayError } from "../errors/errors"
 
+/**
+ * All the services of a user
+ */
 export class UserService {
-    
+    /**
+     * 
+     * @param userRepo Calls the user repository
+     */
     constructor(private userRepo: UserRepository) {
         this.userRepo = userRepo;
     }
 
+    /**
+     * Validates all users and removes password
+     */
     async getAllUsers(): Promise<User[]> {
         
             let users = await this.userRepo.getAll();
@@ -19,7 +28,11 @@ export class UserService {
 
             return users.map(this.removePassword);
     }
-       
+
+    /**
+     * 
+     * @param id The id of the user
+     */
     async getUserById(id: number): Promise<User> {
         
         if (!isValidId(id)) {
@@ -27,7 +40,7 @@ export class UserService {
         }
 
         let user = await this.userRepo.getById(id);
-        //Need to test line 32
+
         if(isEmptyObject(user)) {
             throw new ResourceNotFoundError();
         }
@@ -35,6 +48,10 @@ export class UserService {
         return this.removePassword(user);
     }
 
+    /**
+     * 
+     * @param queryObj Any object within a User
+     */
     async getUserByUniqueKey(queryObj: any): Promise<User> {
 
         try {
@@ -72,6 +89,11 @@ export class UserService {
         }
     }
 
+    /**
+     * 
+     * @param un Username of user
+     * @param pw Password of user
+     */
     async authenticateUser(un: string, pw: string): Promise<User> {
 
         try {
@@ -97,6 +119,10 @@ export class UserService {
 
     }
 
+    /**
+     * 
+     * @param newUser Creates a new user and Validates all information
+     */
     async addNewUser(newUser: User): Promise<User> {
         
         try {
@@ -135,6 +161,10 @@ export class UserService {
 
     }
 
+    /**
+     * 
+     * @param updatedUser Updates a current user infromation
+     */
     async updateUser(updatedUser: User): Promise<boolean> {
         
         try {
@@ -169,6 +199,10 @@ export class UserService {
 
     }
 
+    /**
+     * 
+     * @param id The id of user that will get deleted
+     */
     async deleteById(id: number): Promise<boolean> {
         
         try {
@@ -199,6 +233,10 @@ export class UserService {
 
     }
 
+    /**
+     * 
+     * @param username To check that the username is not taken
+     */
     async isUsernameAvailable(username: string): Promise<boolean> {
 
         try {
@@ -213,6 +251,10 @@ export class UserService {
 
     }
 
+    /**
+     * 
+     * @param email To check that the email is not taken
+     */
     async isEmailAvailable(email: string): Promise<boolean> {
         
         try {
@@ -226,6 +268,10 @@ export class UserService {
         return false;
     }
 
+    /**
+     * 
+     * @param nickname To check that the nickname is not taken
+     */
     async isNicknameAvailable(nickname: string): Promise<boolean> {
         
         try {
@@ -239,6 +285,10 @@ export class UserService {
         return false;
     }
 
+    /**
+     * 
+     * @param user Removes passwords of user
+     */
     private removePassword(user: User): User {
         if(!user || !user.password) return user;
         let usr = {...user};
