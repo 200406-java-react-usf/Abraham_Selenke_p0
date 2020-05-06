@@ -42,7 +42,7 @@ describe('accountService', () => {
 
     });
 
-    test('should return an array of accounts when getAllAccounts succesfully retrieves all accounts', async () => {
+    test('Return an array of accounts when getAllAccounts succesfully retrieves all accounts', async () => {
 
 		expect.hasAssertions();
 		mockRepo.getAll = jest.fn().mockReturnValue(mockAccount);
@@ -67,7 +67,7 @@ describe('accountService', () => {
 		}
     });
     
-    test('should resolve a Account when getAccountById is given a valid id', async () => {
+    test('should return an Account when getAccountById is given a valid id', async () => {
 
 		expect.hasAssertions();
 
@@ -87,7 +87,9 @@ describe('accountService', () => {
 
     test('should throw BadRequestError when getAccountById is provided a negative id value', async () => {
 
-		expect.hasAssertions();
+        expect.hasAssertions();
+        validator.isValidId = jest.fn().mockReturnValue(false);
+        validator.isEmptyObject = jest.fn().mockReturnValue(true);
 		mockRepo.getById = jest.fn().mockReturnValue(false);
 
 		try {
@@ -99,7 +101,9 @@ describe('accountService', () => {
     
     test('should throw BadRequestError when getAccountById is given a value of zero)', async () => {
 
-		expect.hasAssertions();
+        expect.hasAssertions();
+        validator.isValidId = jest.fn().mockReturnValue(false);
+        validator.isEmptyObject = jest.fn().mockReturnValue(true);
 		mockRepo.getById = jest.fn().mockReturnValue(false);
 
 		try {
@@ -111,7 +115,9 @@ describe('accountService', () => {
 
     test('should throw BadRequestError when getAccountById is given a of a decimal value)', async () => {
 
-		expect.hasAssertions();
+        expect.hasAssertions();
+        validator.isValidId = jest.fn().mockReturnValue(false);
+        validator.isEmptyObject = jest.fn().mockReturnValue(true);
 		mockRepo.getById = jest.fn().mockReturnValue(false);
 
 		try {
@@ -123,13 +129,28 @@ describe('accountService', () => {
     
     test('should throw BadRequestError when getAccountById is given not a number)', async () => {
 
-		expect.hasAssertions();
+        expect.hasAssertions();
+        validator.isValidId = jest.fn().mockReturnValue(false);
+        validator.isEmptyObject = jest.fn().mockReturnValue(false);
 		mockRepo.getById = jest.fn().mockReturnValue(false);
 
 		try {
 			await sut.getAccountById(NaN);
 		} catch (e) {
 			expect(e instanceof BadRequestError).toBe(true);
+		}
+    });
+    
+    test('should throw BadRequestError when getAccountById is given not a number)', async () => {
+        expect.hasAssertions();
+        mockRepo.getById = jest.fn().mockReturnValue(1);
+        validator.isValidId = jest.fn().mockReturnValue(true);
+        validator.isEmptyObject = jest.fn().mockReturnValue(true);
+
+		try {
+			await sut.getAccountById(100);
+		} catch (e) {
+			expect(e instanceof ResourceNotFoundError).toBe(true);
 		}
 	});
 
@@ -150,18 +171,31 @@ describe('accountService', () => {
 
 		expect(result).toBeTruthy();
 		expect(mockAccount.length).toBe(4);
-	});
-
-	test('should throw BadRequestError when save is envoked and id is not unique', async () => {
+    });
+    
+    test('should throw BadRequestError when save is envoked an invalid balance', async () => {
 
 		expect.hasAssertions();
-		validator.isValidMoney = jest.fn().mockReturnValue(true);
+		validator.isValidMoney = jest.fn().mockReturnValue(false);
 		validator.isValidString = jest.fn().mockReturnValue(true);
 
 		try {
-			await sut.addNewAccount(new Account(1, 100, new Date, 'checking'));
+			await sut.updateAccount(new Account(1, 0, new Date, 'checking'));
 		} catch (e) {		
-			expect(e instanceof BadRequestError).toBe(false);
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+    });
+    
+    test('should throw BadRequestError when save is envoked an invalid balance', async () => {
+
+		expect.hasAssertions();
+		validator.isValidMoney = jest.fn().mockReturnValue(false);
+		validator.isValidString = jest.fn().mockReturnValue(true);
+
+		try {
+			await sut.addNewAccount(new Account(1, NaN, new Date, 'checking'));
+		} catch (e) {		
+			expect(e instanceof BadRequestError).toBe(true);
 		}
 	});
 
@@ -198,23 +232,37 @@ describe('accountService', () => {
 		validator.isValidString = jest.fn().mockReturnValue(true);
 
 		try {
-			await sut.addNewAccount(new Account(1, 0, new Date, 'saving'));
+			await sut.addNewAccount(new Account(1, -0.005, new Date, 'savings'));
 		} catch (e) {		
 			expect(e instanceof BadRequestError).toBe(true);
 		}
 	});
 
-	// test('should return true when deleteById succesfully deletes an account', async () => {
+	test('should return true when deleteById succesfully deletes an account', async () => {
 
-	// 	expect.hasAssertions();
-	// 	validator.isValidId = jest.fn().mockReturnValue(true);
-	// 	validator.isPropertyOf = jest.fn().mockReturnValue(true);
-	// 	mockRepo.deleteById = jest.fn().mockReturnValue(true);
+        validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        validator.isValidId = jest.fn().mockReturnValue(false);
 
-	// 	let result = await sut.deleteById();
-		
-	// 	expect(result).toBe(true);
-	// });
+        sut.getAccountById = jest.fn().mockImplementation((id: number) => {
+            return new Promise<Account> ((resolve) => {
+                
+                resolve(mockAccount.find(Account => Account.accountId === id));
+            });
+        });
+
+        mockRepo.deleteById = jest.fn().mockImplementation((id:number) => {
+            return new Promise<boolean> ((resolve) => {
+                mockAccount = mockAccount.slice(0,id).concat(mockAccount.slice(id+1,mockAccount.length));
+                resolve(true);
+            }); 
+        });
+        
+        try{
+			await sut.deleteById({id: 1});
+		} catch (e) {
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+	});
 
 	test('should return true when updateAccount is envoked and given a valid account object', async () => {
 
@@ -227,7 +275,6 @@ describe('accountService', () => {
 
 	});
 
-    //Need to look into
 	test('should throw BadRequestError when updateAccount is envoked and given an invalid account object', async () => {
 
 		expect.hasAssertions();
