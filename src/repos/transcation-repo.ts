@@ -7,6 +7,9 @@ import { PoolClient } from 'pg';
 import { connectionPool } from '..';
 import { mapTranscationResultSet } from '../util/result-set-mapper';
 
+/**
+ * Transaction: getAll, getById, save, update, delete
+ */
  export class TranscationRepository implements CrudRepository<Transcation> {
 
     baseQuery = `
@@ -21,6 +24,9 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
         on b.id = t.account_trans_id
     `;
     
+    /**
+     * Returns all transaction
+     */
     async getAll(): Promise<Transcation[]> {
         
         let client: PoolClient;
@@ -37,6 +43,10 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
         }
     }
 
+    /**
+     * 
+     * @param id The id of the transaction
+     */
     async getById(id: number): Promise<Transcation> {
         
         let client: PoolClient;
@@ -53,6 +63,10 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
         } 
     }
 
+    /**
+     * 
+     * @param newTranscation Creates a new transaction with 4 requirements
+     */
     async save(newTranscation: Transcation): Promise<Transcation> {
             
         let client: PoolClient;
@@ -76,6 +90,10 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
     
     }
 
+    /**
+     * 
+     * @param updatedTranscation Updates a transaction with 4 requirements
+     */
     async update(updatedTranscation: Transcation): Promise<boolean> {
         
         let client: PoolClient;
@@ -96,6 +114,10 @@ import { mapTranscationResultSet } from '../util/result-set-mapper';
         }
     }
 
+    /**
+     * 
+     * @param id The transaction id
+     */
     async deleteById(id: number): Promise<boolean> {
 
         let client: PoolClient;
