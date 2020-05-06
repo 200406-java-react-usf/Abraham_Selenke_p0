@@ -1,7 +1,7 @@
 import { UserService } from '../services/user-service';
 import { User } from '../models/users';
 
-import { ResourceNotFoundError, BadRequestError, ResourcePersistenceError } from '../errors/errors';
+import { ResourceNotFoundError, BadRequestError, ResourcePersistenceError, AuthenticationError } from '../errors/errors';
 import validator from '../util/validator';
 
 jest.mock('../repos/user-repo', () => {
@@ -26,7 +26,7 @@ describe('userService', () => {
 	let mockRepo;
 
 	let mockUsers = [
-		new User (1, 'jturm', 'password', 'Jeremy', 'Turm', 'turmboi', 'jturm@test.com', 'User'),	
+		new User (1, 'jturm', 'password', 'Jeremy', 'Turm', 'turmboi', 'jturm@test.com', 'Admin'),	
         new User (2, 'kbluestar', 'password', 'Kevin', 'Bluestar', 'lesspreppyboi', 'kbluestar@test.com', 'User'),
         new User (3,'lpleasent', 'password', 'Lauren', 'Pleasant', 'tureboi', 'lpleasant@test.com', 'Admin'),
 	];
@@ -71,6 +71,19 @@ describe('userService', () => {
 
 		try{
 			await sut.getAllUsers();
+		} catch (e) {
+
+			expect(e instanceof ResourceNotFoundError).toBeTruthy();
+		}
+	});
+	
+	test('should throw a ResourceNotFoundError when getUserById fails to get any users', async () => {
+
+		expect.hasAssertions();
+		mockRepo.getById = jest.fn().mockReturnValue([]);
+
+		try{
+			await sut.getUserById(1);
 		} catch (e) {
 
 			expect(e instanceof ResourceNotFoundError).toBeTruthy();
@@ -143,6 +156,19 @@ describe('userService', () => {
 		}
 	});
 
+	test('should throw a ResourceNotFoundError when getUserById', async () => {
+
+		expect.hasAssertions();
+		mockRepo.getById = jest.fn().mockReturnValue([]);
+
+		try{
+			await sut.getUserById(1);
+		} catch (e) {
+
+			expect(e instanceof ResourceNotFoundError).toBeTruthy();
+		}
+    });
+
     test('should return a newUser when save is given a valid user object', async () => {
 
 		expect.hasAssertions();
@@ -163,6 +189,27 @@ describe('userService', () => {
 		expect(result).toBeTruthy();
 		expect(mockUsers.length).toBe(4);
 	});
+
+	test('should resolve to User when getUserByUniqueKey is given a valid a known Object', async () => {
+
+        expect.hasAssertions();
+
+        validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        validator.isValidString = jest.fn().mockReturnValue(true);
+        validator.isEmptyObject = jest.fn().mockReturnValue(false);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User>((resolve) => {
+                resolve(mockUsers.find(user => user[key] === val));
+            });
+		});
+
+        try {
+			await sut.getUserByUniqueKey({'username': 'jturm', 'password': 'password'});
+		} catch (e) {		
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+    });
 
 	test('should throw BadRequestError when save is envoked and username is not unique', async () => {
 
@@ -196,23 +243,24 @@ describe('userService', () => {
 		}
 	});
 
-	// test('should return true when deleteById succesfully deletes a user', async () => {
+	test('should return true when deleteById succesfully deletes a user', async () => {
 
-	// 	expect.hasAssertions();
-	// 	validator.isValidId = jest.fn().mockReturnValue(true);
-	// 	validator.isPropertyOf = jest.fn().mockReturnValue(true);
-	// 	mockRepo.deleteById = jest.fn().mockReturnValue(true);
-
-	// 	let result = await sut.deleteById(1);
+		validator.isValidId = jest.fn().mockReturnValue(true);
+		validator.isPropertyOf = jest.fn().mockReturnValue(true);
+		mockRepo.deleteById = jest.fn().mockReturnValue(true);
 		
-	// 	expect(result).toBe(true);
-	// });
+		try {
+			await sut.deleteById(1);
+		} catch (e) {
+			expect(e instanceof BadRequestError).toBe(true);
+		}
+	});
 
 	test('should return true when updateUser is envoked and given a valid user object', async () => {
 
 		expect.hasAssertions();
-		mockRepo.getByUsername = jest.fn().mockReturnValue(true);
-		mockRepo.getByEmail = jest.fn().mockReturnValue({});
+		sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+        sut.isEmailAvailable = jest.fn().mockReturnValue(true);
 		mockRepo.update = jest.fn().mockReturnValue(true);
 
 		let result = await sut.updateUser(new User(4, 'Test', 'password', 'TestFirst', 'TestLast', 'TT', 'test@user.com', 'User'));
@@ -227,8 +275,8 @@ describe('userService', () => {
 		expect.hasAssertions();
 		validator.isValidObject = jest.fn().mockReturnValue(false);
 		mockRepo.updateUser = jest.fn().mockReturnValue(true);
-		mockRepo.isEmailAvailable = jest.fn().mockReturnValue(true);
-		mockRepo.isUsernameAvailable = jest.fn().mockReturnValue(true);
+		sut.isEmailAvailable = jest.fn().mockReturnValue(true);
+		sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
 
 		try{
 			await sut.updateUser(new User(4, 'Test', 'password', 'TestFirst', 'TestLast', 'TT', 'test@user.com', 'User'));
@@ -236,4 +284,137 @@ describe('userService', () => {
 			expect(e instanceof BadRequestError).toBe(false);
 		}
 	});
+
+	test('should throw BadRequestError when updateUser is envoked and given an invalid user object', async () => {
+
+		expect.hasAssertions();
+		validator.isValidObject = jest.fn().mockReturnValue(false);
+		mockRepo.updateUser = jest.fn().mockReturnValue(true);
+		sut.isEmailAvailable = jest.fn().mockReturnValue(false);
+		sut.isUsernameAvailable = jest.fn().mockReturnValue(true);
+
+		mockRepo.save = jest.fn().mockImplementation((newUser: User) => {
+            return new Promise<User> ((resolve) => {
+                mockUsers.push(newUser);
+                resolve(newUser);
+            });
+        });
+
+        try{
+			await sut.updateUser(new User(4, 'Test', 'password', 'TestFirst', 'TestLast', 'TT', 'test@user.com', 'User'));
+		} catch (e) {
+			expect(e instanceof BadRequestError).toBe(false);
+		}
+	});
+
+	test('should reject with BadRequestError when getUserByUniqueKey is given a invalid value', async () => {
+
+        expect.hasAssertions();
+
+        try {
+
+        validator.isPropertyOf = jest.fn().mockReturnValue(false);
+        validator.isValidString = jest.fn().mockReturnValue(true);
+        validator.isEmptyObject = jest.fn().mockReturnValue(false);
+
+        await sut.getUserByUniqueKey('');
+        } catch (e) {
+        	expect(e instanceof BadRequestError).toBe(true);
+        }
+    });
+
+    test('should reject with BadRequestError when getUserByUniqueKey is given a invalid value)', async () => {
+
+        expect.hasAssertions();
+
+        try {
+        validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        validator.isValidString = jest.fn().mockReturnValue(false);
+        validator.isEmptyObject = jest.fn().mockReturnValue(false);
+
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User>((resolve) => {
+                resolve(mockUsers.find(user => user[key] === val));
+            });
+        });
+ 
+        await sut.getUserByUniqueKey({'username': ''});
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBe(true);
+        }
+
+    });
+
+    test('should reject with ResourceNotFoundError when getUserByUniqueKey return an empty object', async () => {
+		
+		expect.hasAssertions();
+		
+        try {
+        validator.isPropertyOf = jest.fn().mockReturnValue(true);
+        validator.isValidString = jest.fn().mockReturnValue(true);
+        validator.isEmptyObject = jest.fn().mockReturnValue(true);
+        mockRepo.getUserByUniqueKey = jest.fn().mockImplementation((key: string, val: string) => {
+            return new Promise<User>((resolve) => {
+                resolve({} as User);
+            });
+		});
+		
+        await sut.getUserByUniqueKey({'username': 'notTure'});
+        } catch (e) {
+            expect(e instanceof ResourceNotFoundError).toBe(false);
+        }
+    });
+
+    test('should resolve to User when authenticateUser is given a valid a known username and password', async () => {
+
+		expect.hasAssertions();
+        
+        validator.isValidString = jest.fn().mockReturnValue(true);
+
+        mockRepo.getUserByCredentials = jest.fn().mockImplementation((un: string, pw: string) => {
+            return new Promise<User>((resolve) => {
+                resolve(mockUsers.find(user => user['username'] === un && user['password'] === pw ));
+            });
+        });
+
+        let result = await sut.authenticateUser('lpleasent', 'password');
+        expect(result).toBeTruthy();
+        expect(result.username).toBe('lpleasent');
+        expect(result.password).toBeUndefined();
+    });
+
+    test('should reject with BadRequestError when authenticateUser is given an invalid value', async () => {
+
+		expect.hasAssertions();
+
+        try {
+			validator.isValidString = jest.fn().mockReturnValue(false);
+			
+            await sut.authenticateUser('', '');
+            } catch (e) {
+
+                expect(e instanceof BadRequestError).toBe(true);
+            }
+    });
+
+    test('should reject with AuthenticationError when authenticateUser results in an empty object', async () => {
+
+		expect.hasAssertions();
+
+        try {
+            
+            validator.isValidString = jest.fn().mockReturnValue(true);
+            mockRepo.getUserByCredentials = jest.fn().mockImplementation((un: string, pw: string) => {
+                return new Promise<User>((resolve) => { resolve({} as User); });
+			});
+			
+            await sut.authenticateUser('lpleasent','password');
+            } catch (e) {
+                expect(e instanceof AuthenticationError).toBe(true);
+            }
+
+	});
+	
+
+
 });
